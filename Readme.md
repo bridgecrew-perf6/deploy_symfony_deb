@@ -14,8 +14,8 @@ This code creates symfony test app with all depends,  interactive migrations wit
   - dh-make 
   - devscripts
   - mysql-server
-  - >=gcc 10.3
-  - >=g++ 10.3 
+  - (>=) gcc 10.3
+  - (>=) g++ 10.3 
   - php repo (php8.1)
   
   
@@ -31,11 +31,11 @@ sudo add-apt-repository ppa:ondrej/php
 ```
 
 
-### How to
+# How to
 
 ## Method 1
 
-## Build deb
+### Build deb
 1. Clone repo
 2. Check files owner, if it isn't your user fix it
 3. Navigate in directory test-symfony/debian
@@ -46,13 +46,13 @@ debuild -b
 ```
 If all is ok, deb will be built outside test-symfony/
 
-## Install deb
+### Install deb
 Run
 ```
 sudo apt install ./package.deb
 ```
 
-## Test
+### Test
 
 Test in your browser  http://yourip:80
 
@@ -66,5 +66,4 @@ sudo apt install ./package.deb
 ```
 
 ## License
-
 GNU GPL v3
