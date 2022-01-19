@@ -1,0 +1,7 @@
+/etc/nginx
+/var/cache/nginx/client_temp
+/etc/nginx/conf.d/
+/var/www/
+/var/log/nginx
+/usr/sbin/
+/var/cache/ngx_pagespeed

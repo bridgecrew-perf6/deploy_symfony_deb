@@ -1,0 +1,5 @@
+etc/nginx/* etc/nginx
+var/www/test-symfony/* var/www/test-symfony/
+usr/sbin/* usr/sbin
+var/www/env/.env var/www/test-symfony/
+var/www/env/www.conf /var/www/

@@ -1,0 +1,3 @@
+test-symfony-dbgsym_1.9.1-ubuntuubuntu1_amd64.ddeb debug optional automatic=yes
+test-symfony_1.9.1-ubuntuubuntu1_amd64.buildinfo devel optional
+test-symfony_1.9.1-ubuntuubuntu1_amd64.deb devel optional

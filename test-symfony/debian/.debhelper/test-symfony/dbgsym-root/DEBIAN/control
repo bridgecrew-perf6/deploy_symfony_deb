@@ -1,0 +1,13 @@
+Package: test-symfony-dbgsym
+Package-Type: ddeb
+Source: test-symfony
+Version: 1.9.1-ubuntuubuntu1
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: "Roman" <mmm.romka@gmail.com>
+Installed-Size: 6723
+Depends: test-symfony (= 1.9.1-ubuntuubuntu1)
+Section: debug
+Priority: optional
+Description: debug symbols for test-symfony
+Build-Ids: 4317e74c7c839cc30187649505655834ac22b273

@@ -1,0 +1,117 @@
+#!/bin/bash
+set -e # fail on any error
+set -u # treat unset variables as errors
+
+# ======[ Trap Errors ]======#
+set -E # let shell functions inherit ERR trap
+
+# Trap non-normal exit signals:
+# 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
+trap err_handler 1 2 3 15 ERR
+function err_handler {
+local exit_status=${1:-$?}
+logger -s -p "syslog.err" -t "ootync.deb" "supersh.deb script '$0' error code $exit_status (line $BASH_LINENO: '$BASH_COMMAND')"
+exit $exit_status
+}
+
+### Setting up version control
+ver=1.9
+
+### Clean db if purge
+if [ "$1" == "purge" ] && [ -e /usr/share/debconf/confmodule ] ; then
+. /usr/share/debconf/confmodule
+db_purge
+fi
+
+
+### Setting Up database [idempotent]
+mysql -e "CREATE USER IF NOT EXISTS 'symfony'@'localhost' IDENTIFIED  BY '123456';"
+mysql -e "CREATE DATABASE IF NOT EXISTS symfony CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
+mysql -e "GRANT ALL PRIVILEGES ON symfony.* TO 'symfony'@'localhost';"
+ 
+#### Moving symfony to certain dir version
+cd /var/www
+mv -f test-symfony /var/www/test-symfony-"$ver"
+
+### Creating symlink to test-symfony
+cd /var/www
+ln -s /var/www/test-symfony-"$ver" test-symfony
+
+### Copy PHP settings
+rm -f /etc/php/8.1/fpm/pool.d/www.conf
+cp /var/www/www.conf /etc/php/8.1/fpm/pool.d/
+chmod 0644 /etc/php/8.1/fpm/pool.d/www.conf
+
+### Changing permissions 
+chown nginx:nginx /var/www/test-symfony-"$ver"
+chown nginx:nginx /var/cache/ngx_pagespeed
+
+### Starting NGINX
+sudo systemctl enable nginx.service 2>/dev/null
+sudo systemctl start  nginx.service 2>/dev/null
+sudo systemctl is-enabled  nginx.service 2>/dev/null
+
+
+### Installing PHP if not exist [idempotent]
+
+if [ -f /usr/local/bin/composer ]; then
+:
+else
+cd /home
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+fi
+
+### Installing requests
+export COMPOSER_ALLOW_SUPERUSER=1
+cd /var/www/test-symfony-"$ver" 
+php /usr/local/bin/composer install
+
+
+
+### Removing temp files [idempotent]
+if [ -f /var/www/www.conf ]; then
+rm -f /var/www/www.conf
+else
+:
+fi
+
+if [ -f /home/composer-setup.php ]; then
+rm -f /home/composer-setup.php
+else
+:
+fi
+
+
+### Asking user for default schema
+read  -r -n 3 -t 10 -p  "Do you want create default schema (yes/no)?>>"  crd
+case "$crd" in 
+yes*|YES*)
+cd /var/www/test-symfony-"$ver"/bin
+./console doctrine:schema:create 2>/dev/null
+;;
+no*|NO*)
+echo "Skip"
+;;
+esac
+
+### Asking user for load fixtures
+read  -r -n 3 -t 10 -p  "Do you want load fixtures (yes/no)?>>"  crd2
+case "$crd2" in 
+yes*|YES*)
+cd /var/www/test-symfony-"$ver"/bin
+./console doctrine:fixtures:load 2>/dev/null
+;;
+no*|NO*)
+echo "Skip"
+;;
+esac
+
+
+
+
+
+
+echo "Done!"
+
+exit 0
