@@ -10,7 +10,7 @@ This code creates symfony test app with all depends,  interactive migrations wit
 
 
 ## Requrements to build 
-- >= Ubuntu OS 21.10 
+  - Ubuntu OS 21.10 (it will work with earlier versions)
   - dh-make 
   - devscripts
   - mysql-server
@@ -30,15 +30,16 @@ sudo apt install software-properties-common
 sudo add-apt-repository ppa:ondrej/php  
 ```
 
-## Main steps
 
+### How to
+
+## Method 1
 
 ## Build deb
 1. Clone repo
-2. Move all files into directory test-symfony/
-3. Check files owner, if it isn't your user fix it
-4. Navigate in test-symfony/debian
-5. Build deb 
+2. Check files owner, if it isn't your user fix it
+3. Navigate in directory test-symfony/debian
+4. Build deb 
 
 ```
 debuild -b
@@ -55,6 +56,14 @@ sudo apt install ./package.deb
 
 Test in your browser  http://yourip:80
 
+## Method 2
+
+1. Clone repo
+2. install prepared deb  test-symfony_1.9.1-ubuntuubuntu1_amd64.deb
+
+```
+sudo apt install ./package.deb
+```
 
 ## License
 
